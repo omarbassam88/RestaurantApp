@@ -26,20 +26,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-if(ANDROID)
-  add_library(Restaurant_App SHARED
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-  )
-else()
+
   add_executable(Restaurant_App
     main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    table.cpp
+    table.h
+    item.cpp
+    item.h
+    receipt.cpp
+    receipt.h
   )
-endif()
+
 
 target_link_libraries(Restaurant_App PRIVATE Qt5::Widgets)
