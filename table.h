@@ -8,6 +8,9 @@ public:
     Table();
 
     void setCurrentReceipt(Receipt &receipt);
+    int getID() { return m_ID; }
+    Receipt *getCurrentReceipt() { return m_currentReceipt; }
+    void setCurrentReceipt(Receipt *rec) { m_currentReceipt = rec; }
 
     static int lastTableID;
 

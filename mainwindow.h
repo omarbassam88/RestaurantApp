@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <vector>
+#include "table.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -33,6 +35,10 @@ private:
     Ui::MainWindow *ui;
     QTimer *timer_1s;
     int m_max_column_count = 4;
+    std::vector<Table *> m_tablesList;
+    std::vector<Item *> m_itemsInventory;
+
+    Table *m_selectedTable;
 
     void CreateTables(uint16_t Number);
 };

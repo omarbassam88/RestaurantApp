@@ -1,6 +1,6 @@
 #include "item.h"
 
-Item::Item(std::string name, ItemCategory category)
-    : m_name(name), m_category(category)
+Item::Item(std::string name, ItemCategory category, float price)
+    : m_name(name), m_category(category), m_price(price)
 {
 }

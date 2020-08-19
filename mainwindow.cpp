@@ -6,17 +6,13 @@
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentIndex(0);
     timer_1s = new QTimer(this);
-    connect(timer_1s, SIGNAL(timeout()),this,SLOT(UpdateTime()));
+    connect(timer_1s, SIGNAL(timeout()), this, SLOT(UpdateTime()));
     timer_1s->start(1000);
-
-
-
 }
 
 MainWindow::~MainWindow()
@@ -24,7 +20,6 @@ MainWindow::~MainWindow()
     delete ui;
     delete timer_1s;
 }
-
 
 void MainWindow::on_CreateTables_Button_clicked()
 {
@@ -45,18 +40,21 @@ void MainWindow::CreateTables(uint16_t Number)
     int current_row = 0;
     int current_column = 0;
 
-    for (int i = 0; i< Number; i++) {
+    for (int i = 0; i < Number; i++)
+    {
+        m_tablesList.push_back(new Table());
+
+        // Create Table Button
         QString Button_Name;
-        Button_Name = QString::number(i+1);
-        QPushButton* Table_Button = new QPushButton(Button_Name);
-        Table_Button->setMaximumSize(100,50);
+        Button_Name = QString::number(i + 1);
+        QPushButton *Table_Button = new QPushButton(Button_Name);
+        Table_Button->setMaximumSize(100, 50);
 
+        ui->TablesGrid->addWidget(Table_Button, current_row, current_column);
 
-        ui->TablesGrid->addWidget(Table_Button,current_row,current_column );
+        connect(Table_Button, SIGNAL(clicked()), this, SLOT(TablePage()));
 
-        connect(Table_Button, SIGNAL(clicked()),this,SLOT(TablePage()));
-
-        if( current_column == (m_max_column_count-1) )
+        if (current_column == (m_max_column_count - 1))
         {
             current_column = 0;
             ++current_row;
@@ -66,20 +64,34 @@ void MainWindow::CreateTables(uint16_t Number)
             ++current_column;
         }
 
-        qDebug("Table %d is Created", i+1);
+        qDebug("Table %d is Created", i + 1);
     }
 }
 
 void MainWindow::TablePage()
 {
-    QPushButton* buttonSender = qobject_cast<QPushButton*>(sender());
-    qDebug("Table no %s is Selected",qUtf8Printable(buttonSender->text()));
+    // Get selected Table
+    QPushButton *buttonSender = qobject_cast<QPushButton *>(sender());
+    int table_index = buttonSender->text().toInt() - 1;
+    m_selectedTable = m_tablesList.at(table_index);
+    qDebug("Table no %d is Selected", m_selectedTable->getID());
+
+    // check if Table already has a Receipt
+    if (m_selectedTable->getCurrentReceipt() == NULL)
+    {
+        Receipt *receipt = new Receipt(m_selectedTable);
+        qDebug("New Receipt %d is Created", receipt->getID());
+    }
+    else
+    {
+        Receipt *receipt = m_selectedTable->getCurrentReceipt();
+        qDebug("Receipt %d already Exists", receipt->getID());
+    }
+
+    // Update UI
     ui->stackedWidget->setCurrentIndex(2);
     ui->TablePageLabel->setText("Table no." + buttonSender->text());
-
 }
-
-
 
 void MainWindow::go_to_PreviousPage()
 {
@@ -91,7 +103,6 @@ void MainWindow::go_to_PreviousPage()
 void MainWindow::on_BackButton_clicked()
 {
     go_to_PreviousPage();
-
 }
 
 void MainWindow::on_BackButton_2_clicked()

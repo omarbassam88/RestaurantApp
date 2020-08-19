@@ -1,20 +1,36 @@
+#include <QDebug>
+#include "table.h"
 #include "receipt.h"
 
 int Receipt::lastReceiptID = 0;
 
-Receipt::Receipt(Table &table)
+Receipt::Receipt(Table *&table)
 {
     lastReceiptID++;
     m_ID = lastReceiptID;
-    m_table = &table;
+    table->setCurrentReceipt(this);
 }
 
-void Receipt::addItem(Item* item)
+void Receipt::addItem(Item &item, int count)
 {
-    m_itemsList.push_back(item);
+    if (m_itemsList.find(&item) != m_itemsList.end()) // Check if Item exists
+    {
+        m_itemsList[&item] += count;
+    }
+    else
+    {
+        m_itemsList.insert(std::make_pair(&item, 1));
+    }
 }
 
-void Receipt::removeItem(Item item)
+void Receipt::removeItem(Item &item)
 {
-    
+    if (m_itemsList.find(&item) != m_itemsList.end()) // Check if Item exists
+    {
+        m_itemsList.erase(&item);
+    }
+    else
+    {
+        qDebug("Item is not in the receipt");
+    }
 }

@@ -8,7 +8,7 @@ Table::Table()
     m_ID = lastTableID;
 }
 
-void Table::setCurrentReceipt(Receipt &receipt) 
+void Table::setCurrentReceipt(Receipt &receipt)
 {
     m_currentReceipt = &receipt;
 }

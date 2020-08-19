@@ -12,11 +12,12 @@ enum ItemCategory
 class Item
 {
 public:
-    Item(std::string name, ItemCategory category);
+    Item(std::string name, ItemCategory category, float price);
 
 private:
-    std::string m_name;
     int m_ID;
+    std::string m_name;
+    float m_price;
     ItemCategory m_category;
 };
 
