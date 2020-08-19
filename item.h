@@ -3,22 +3,17 @@
 
 #include <string>
 
-enum ItemCategory
-{
-    Food,
-    Bevereges
-};
+enum ItemCategory { Food, Bevereges };
 
-class Item
-{
+class Item {
 public:
-    Item(std::string name, ItemCategory category, float price);
+  Item(std::string name, ItemCategory category, float price);
 
 private:
-    int m_ID;
-    std::string m_name;
-    float m_price;
-    ItemCategory m_category;
+  int m_ID;
+  std::string m_name;
+  float m_price;
+  ItemCategory m_category;
 };
 
 #endif // ITEM_H

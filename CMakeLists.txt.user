@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.12.4, 2020-08-19T23:07:39. -->
+<!-- Written by QtCreator 4.12.4, 2020-08-20T00:21:47. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -70,7 +70,9 @@
     <value type="bool" key="ClangTools.BuildBeforeAnalysis">true</value>
     <value type="QString" key="ClangTools.DiagnosticConfig">Builtin.DefaultTidyAndClazy</value>
     <value type="int" key="ClangTools.ParallelJobs">8</value>
-    <valuelist type="QVariantList" key="ClangTools.SelectedDirs"/>
+    <valuelist type="QVariantList" key="ClangTools.SelectedDirs">
+     <value type="QString">/home/bassam/Desktop/Restaurant_App/CMakeLists.txt</value>
+    </valuelist>
     <valuelist type="QVariantList" key="ClangTools.SelectedFiles"/>
     <valuelist type="QVariantList" key="ClangTools.SuppressedDiagnostics"/>
     <value type="bool" key="ClangTools.UseGlobalSettings">true</value>
