@@ -50,5 +50,6 @@ private slots:
 
   void CreateTables(uint16_t Number);
   void ShowReceiptItems(Receipt* receipt);
+  void addItemToTable(Item &item);
 };
 #endif // MAINWINDOW_H

@@ -16,7 +16,6 @@ public:
 
   // Override Operator < to be able to find in std::map
   friend bool operator<(const Item &lhs, const Item &rhs) {
-    qDebug("Comparing Two Items");
     return lhs.getName() < rhs.getName();
   }
 

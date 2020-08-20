@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
   ui->tableReceiptItemsList->setColumnWidth(1, 50);
   ui->tableReceiptItemsList->header()->setSectionResizeMode(
       0, QHeaderView::Stretch);
+  ui->tableReceiptItemsList->setSortingEnabled(false);
 }
 
 MainWindow::~MainWindow() {
@@ -60,9 +61,9 @@ void MainWindow::CreateTables(uint16_t Number) {
 
     if (current_column == (m_max_column_count - 1)) {
       current_column = 0;
-      ++current_row;
+      current_row++;
     } else {
-      ++current_column;
+      current_column++;
     }
 
     qDebug("Table %d is Created", i + 1);
@@ -80,17 +81,16 @@ void MainWindow::TablePage() {
 
   // check if Table already has a Receipt
   if (m_selectedTable->getCurrentReceipt() == NULL) {
-    receipt = new Receipt(m_selectedTable);
-    qDebug("New Receipt %d is Created", receipt->getID());
+    ui->tableReceiptItemsList->clear();
   } else {
     receipt = m_selectedTable->getCurrentReceipt();
     qDebug("Receipt %d already Exists", receipt->getID());
+    ShowReceiptItems(receipt);
   }
 
   // Update UI
   ui->stackedWidget->setCurrentIndex(2);
   ui->TablePageLabel->setText("Table no." + buttonSender->text());
-  ShowReceiptItems(receipt);
 }
 
 void MainWindow::go_to_PreviousPage() {
@@ -104,13 +104,16 @@ void MainWindow::ShowReceiptItems(Receipt *receipt) {
   ui->tableReceiptItemsList->clear();
 
   // Add current Receipt Items to the ListView
+  if (!receipt) {
+    qDebug("Table no. %d has no Receipt", m_selectedTable->getID());
+  } else {
+    for (auto &[key, value] : receipt->getItemsList()) {
 
-  for (auto &[key, value] : receipt->getItemsList()) {
-
-    QTreeWidgetItem *newItem = new QTreeWidgetItem(ui->tableReceiptItemsList);
-    newItem->setText(0, QString::fromStdString(key.getName()));
-    newItem->setText(1, QString::number(value));
-    ui->tableReceiptItemsList->addTopLevelItem(newItem);
+      QTreeWidgetItem *newItem = new QTreeWidgetItem(ui->tableReceiptItemsList);
+      newItem->setText(0, QString::fromStdString(key.getName()));
+      newItem->setText(1, QString::number(value));
+      ui->tableReceiptItemsList->addTopLevelItem(newItem);
+    }
   }
 }
 
@@ -143,13 +146,26 @@ void MainWindow::on_RemoveItemButton_clicked() {
 
 void MainWindow::on_BackButton_3_clicked() { go_to_PreviousPage(); }
 
+void MainWindow::addItemToTable(Item &item) {
+  Receipt *receipt;
+  // check if Table already has a Receipt
+  if (m_selectedTable->getCurrentReceipt() == NULL) {
+    receipt = new Receipt(m_selectedTable);
+    qDebug("New Receipt %d is Created", receipt->getID());
+  } else {
+    receipt = m_selectedTable->getCurrentReceipt();
+    qDebug("Receipt %d already Exists", receipt->getID());
+  }
+
+  receipt->addItem(item);
+
+  ShowReceiptItems(receipt);
+}
+
 void MainWindow::on_FoodCategoryButton_clicked() {
   /* ADD Dummy Food to Receipt */
   Item item("Sandwich", ItemCategory::Food, 40.0);
-
-  m_selectedTable->getCurrentReceipt()->addItem(item);
-
-  ShowReceiptItems(m_selectedTable->getCurrentReceipt());
+  addItemToTable(item);
 
   go_to_PreviousPage();
 }
@@ -157,10 +173,7 @@ void MainWindow::on_FoodCategoryButton_clicked() {
 void MainWindow::on_BeveragesCategoryButton_clicked() {
   // Add Dummy Beverage to the Receipt
   Item item("Pepsi", ItemCategory::Bevereges, 20.0);
-
-  m_selectedTable->getCurrentReceipt()->addItem(item);
-
-  ShowReceiptItems(m_selectedTable->getCurrentReceipt());
+  addItemToTable(item);
 
   go_to_PreviousPage();
 }
