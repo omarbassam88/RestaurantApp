@@ -11,18 +11,21 @@ Receipt::Receipt(Table *&table) {
 }
 
 void Receipt::addItem(Item &item, int count) {
-  if (m_itemsList.find(&item) != m_itemsList.end()) // Check if Item exists
+  if (m_itemsList.count(item) > 0) // Check if Item exists
   {
-    m_itemsList[&item] += count;
+    qDebug("Item Already Exists");
+    m_itemsList[item] += count;
   } else {
-    m_itemsList.insert(std::make_pair(&item, 1));
+    m_itemsList.insert(std::make_pair(item, 1));
+    qDebug("Item Doesn't Exist Will be Added");
+    qDebug("Total Number of Items: %d", m_itemsList.size());
   }
 }
 
-void Receipt::removeItem(Item &item) {
-  if (m_itemsList.find(&item) != m_itemsList.end()) // Check if Item exists
+void Receipt::removeItem(const Item &item) {
+  if (m_itemsList.find(item) != m_itemsList.end()) // Check if Item exists
   {
-    m_itemsList.erase(&item);
+    m_itemsList.erase(item);
   } else {
     qDebug("Item is not in the receipt");
   }

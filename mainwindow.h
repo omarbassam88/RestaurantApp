@@ -29,7 +29,17 @@ private slots:
 
   void on_BackButton_2_clicked();
 
-private:
+  void on_AddItemButton_clicked();
+
+  void on_RemoveItemButton_clicked();
+
+  void on_BackButton_3_clicked();
+
+  void on_FoodCategoryButton_clicked();
+
+  void on_BeveragesCategoryButton_clicked();
+
+  private:
   Ui::MainWindow *ui;
   QTimer *timer_1s;
   int m_max_column_count = 4;
@@ -39,5 +49,6 @@ private:
   Table *m_selectedTable;
 
   void CreateTables(uint16_t Number);
+  void ShowReceiptItems(Receipt* receipt);
 };
 #endif // MAINWINDOW_H
