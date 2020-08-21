@@ -39,7 +39,7 @@
     <string notr="true"/>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="1">
+    <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -51,7 +51,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="page_1">
        <layout class="QGridLayout" name="gridLayout">
@@ -350,14 +350,14 @@
          </widget>
         </item>
         <item row="2" column="0" colspan="2">
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <layout class="QGridLayout" name="gridLayout_7">
           <property name="leftMargin">
            <number>100</number>
           </property>
           <property name="rightMargin">
            <number>100</number>
           </property>
-          <item>
+          <item row="0" column="0">
            <widget class="QLabel" name="label_2">
             <property name="maximumSize">
              <size>
@@ -373,21 +373,62 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="0">
+           <layout class="QVBoxLayout" name="categoritesListSelection"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_5">
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="2" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QPushButton" name="FoodCategoryButton">
+           <widget class="QPushButton" name="AddSelectedItemButton">
             <property name="text">
-             <string>Food</string>
+             <string>Add</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="BeveragesCategoryButton">
+           <widget class="QPushButton" name="CancelButton">
             <property name="text">
-             <string>Beverages</string>
+             <string>Cancel</string>
             </property>
            </widget>
           </item>
          </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QTreeWidget" name="CateryItemsList">
+          <attribute name="headerVisible">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string notr="true">1</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="SelectedCategoryLabel">
+          <property name="font">
+           <font>
+            <pointsize>24</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="margin">
+           <number>20</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

@@ -3,7 +3,7 @@
 #include <QtDebug>
 #include <string>
 
-enum ItemCategory { Food, Bevereges };
+enum ItemCategory { Food, Beverages, Other };
 
 class Item {
 public:
@@ -17,6 +17,9 @@ public:
   // Override Operator < to be able to find in std::map
   friend bool operator<(const Item &lhs, const Item &rhs) {
     return lhs.getName() < rhs.getName();
+  }
+  static std::vector<std::string> getCategoryNames() {
+    return {"Food", "Beverages", "Other"};
   }
 
 private:

@@ -4,13 +4,13 @@
 
 int Receipt::lastReceiptID = 0;
 
-Receipt::Receipt(Table *&table) {
+Receipt::Receipt(Table &table) {
   lastReceiptID++;
   m_ID = lastReceiptID;
-  table->setCurrentReceipt(this);
+  m_table = &table;
 }
 
-void Receipt::addItem(Item &item, int count) {
+void Receipt::addItem(const Item &item, int count) {
   if (m_itemsList.count(item) > 0) // Check if Item exists
   {
     qDebug("Item Already Exists");

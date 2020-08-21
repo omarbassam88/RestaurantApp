@@ -23,6 +23,28 @@ MainWindow::MainWindow(QWidget *parent)
   ui->tableReceiptItemsList->header()->setSectionResizeMode(
       0, QHeaderView::Stretch);
   ui->tableReceiptItemsList->setSortingEnabled(false);
+
+  // Add Button for Each Category
+  for (std::string categoryName : Item::getCategoryNames()) {
+
+    QPushButton *button = new QPushButton(QString::fromStdString(categoryName));
+    ui->categoritesListSelection->addWidget(button);
+    connect(button, SIGNAL(clicked()), this, SLOT(CategoryItemsPage()));
+  }
+
+  // Create Inventory
+  /* ========================================================== */
+  // Add Dummy Beverage to the Inventory
+  Item *item = new Item("Pepsi", ItemCategory::Beverages, 20.0);
+  m_itemsInventory.push_back(item);
+  item = new Item("Sandwich", ItemCategory::Food, 20.0);
+  m_itemsInventory.push_back(item);
+  item = new Item("Orange Juice", ItemCategory::Beverages, 20.0);
+  m_itemsInventory.push_back(item);
+  item = new Item("Pasta", ItemCategory::Food, 20.0);
+  m_itemsInventory.push_back(item);
+  item = new Item("Apple Juice", ItemCategory::Beverages, 20.0);
+  m_itemsInventory.push_back(item);
 }
 
 MainWindow::~MainWindow() {
@@ -93,6 +115,28 @@ void MainWindow::TablePage() {
   ui->TablePageLabel->setText("Table no." + buttonSender->text());
 }
 
+void MainWindow::CategoriesPage() { ui->stackedWidget->setCurrentIndex(3); }
+
+void MainWindow::CategoryItemsPage() {
+  QPushButton *buttonSender = qobject_cast<QPushButton *>(sender());
+  std::string categoryName = buttonSender->text().toStdString();
+
+  ItemCategory category;
+
+  if (categoryName == "Food") {
+    category = ItemCategory::Food;
+  } else if (categoryName == "Beverages") {
+    category = ItemCategory::Beverages;
+  } else {
+    category = ItemCategory::Other;
+  }
+
+  // update UI
+  ShowCategoryItems(category);
+  ui->SelectedCategoryLabel->setText(buttonSender->text());
+  ui->stackedWidget->setCurrentIndex(4);
+}
+
 void MainWindow::go_to_PreviousPage() {
   int current_page = ui->stackedWidget->currentIndex();
   qDebug("%d", current_page);
@@ -117,13 +161,37 @@ void MainWindow::ShowReceiptItems(Receipt *receipt) {
   }
 }
 
+void MainWindow::ShowCategoryItems(ItemCategory category) {
+
+  std::vector<Item *> categoryItems;
+
+  // Set Category Items
+  if (category == ItemCategory::Other) {
+    categoryItems = m_itemsInventory;
+  } else {
+    for (Item *&itm : m_itemsInventory) {
+      if (itm->getCategory() == category) {
+        categoryItems.push_back(itm);
+      }
+    }
+  }
+
+  // Update UI
+  ui->CateryItemsList->clear();
+  for (Item *&itm : categoryItems) {
+    QTreeWidgetItem *newItem = new QTreeWidgetItem(ui->CateryItemsList);
+    newItem->setText(0, QString::fromStdString(itm->getName()));
+    ui->CateryItemsList->addTopLevelItem(newItem);
+  }
+}
+
 void MainWindow::on_BackButton_clicked() { go_to_PreviousPage(); }
 
 void MainWindow::on_BackButton_2_clicked() { go_to_PreviousPage(); }
 
-void MainWindow::on_AddItemButton_clicked() {
-  ui->stackedWidget->setCurrentIndex(3);
-}
+void MainWindow::on_BackButton_3_clicked() { go_to_PreviousPage(); }
+
+void MainWindow::on_AddItemButton_clicked() { CategoriesPage(); }
 
 void MainWindow::on_RemoveItemButton_clicked() {
   if (ui->tableReceiptItemsList->selectedItems().empty()) {
@@ -144,36 +212,27 @@ void MainWindow::on_RemoveItemButton_clicked() {
   ShowReceiptItems(m_selectedTable->getCurrentReceipt());
 }
 
-void MainWindow::on_BackButton_3_clicked() { go_to_PreviousPage(); }
-
-void MainWindow::addItemToTable(Item &item) {
-  Receipt *receipt;
-  // check if Table already has a Receipt
-  if (m_selectedTable->getCurrentReceipt() == NULL) {
-    receipt = new Receipt(m_selectedTable);
-    qDebug("New Receipt %d is Created", receipt->getID());
+void MainWindow::on_AddSelectedItemButton_clicked() {
+  if (ui->CateryItemsList->selectedItems().empty()) {
+    qDebug("No Item is selected");
   } else {
-    receipt = m_selectedTable->getCurrentReceipt();
-    qDebug("Receipt %d already Exists", receipt->getID());
+    QString selected_item =
+        ui->CateryItemsList->selectedItems().first()->text(0);
+
+    qDebug("%s Item is Selected", qUtf8Printable(selected_item));
+
+    for (Item *&itm : m_itemsInventory) {
+      if (itm->getName() == selected_item.toStdString()) {
+        m_selectedTable->addItem(*itm);
+      }
+    }
+
+    // Update UI
+    ShowReceiptItems(m_selectedTable->getCurrentReceipt());
+    ui->stackedWidget->setCurrentIndex(2);
   }
-
-  receipt->addItem(item);
-
-  ShowReceiptItems(receipt);
 }
 
-void MainWindow::on_FoodCategoryButton_clicked() {
-  /* ADD Dummy Food to Receipt */
-  Item item("Sandwich", ItemCategory::Food, 40.0);
-  addItemToTable(item);
-
-  go_to_PreviousPage();
-}
-
-void MainWindow::on_BeveragesCategoryButton_clicked() {
-  // Add Dummy Beverage to the Receipt
-  Item item("Pepsi", ItemCategory::Bevereges, 20.0);
-  addItemToTable(item);
-
-  go_to_PreviousPage();
+void MainWindow::on_CancelButton_clicked() {
+  ui->stackedWidget->setCurrentIndex(2);
 }

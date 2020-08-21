@@ -24,6 +24,8 @@ private slots:
   void on_CreateTables_Button_clicked();
   void UpdateTime();
   void TablePage();
+  void CategoriesPage();
+  void CategoryItemsPage();
 
   void on_BackButton_clicked();
 
@@ -35,9 +37,9 @@ private slots:
 
   void on_BackButton_3_clicked();
 
-  void on_FoodCategoryButton_clicked();
+  void on_AddSelectedItemButton_clicked();
 
-  void on_BeveragesCategoryButton_clicked();
+  void on_CancelButton_clicked();
 
   private:
   Ui::MainWindow *ui;
@@ -49,7 +51,7 @@ private slots:
   Table *m_selectedTable;
 
   void CreateTables(uint16_t Number);
-  void ShowReceiptItems(Receipt* receipt);
-  void addItemToTable(Item &item);
+  void ShowReceiptItems(Receipt *receipt);
+  void ShowCategoryItems(ItemCategory category);
 };
 #endif // MAINWINDOW_H

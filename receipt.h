@@ -9,9 +9,9 @@ class Table;
 
 class Receipt {
 public:
-  Receipt(Table *&table);
+  Receipt(Table &table);
 
-  void addItem(Item &item, int count = 1);
+  void addItem(const Item &item, int count = 1);
   void removeItem(const Item &item);
 
   int getID() { return m_ID; }
