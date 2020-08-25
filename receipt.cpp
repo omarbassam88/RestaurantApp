@@ -39,6 +39,7 @@ void Receipt::removeItem(const Item &item) {
 }
 
 void Receipt::calculate() {
+  m_subTotal = 0;
   for (auto &[key, count] : m_itemsList) {
     m_subTotal += key.getPrice() * count;
   }
@@ -47,7 +48,6 @@ void Receipt::calculate() {
 }
 
 void Receipt::print() {
-
 
   std::string cwd = std::filesystem::current_path();
 
@@ -58,17 +58,21 @@ void Receipt::print() {
 
   outFile.open("TestPrintReceipt.txt");
 
+  std::setprecision(1);
+  std::fixed;
+
   outFile << "Receipt No. : " << m_ID << std::endl;
 
   outFile << "===========================" << std::endl;
 
   for (auto &[key, count] : m_itemsList) {
-    outFile << key.getName() << "   " << count << "   " << key.getPrice()
-            << "   " << key.getPrice() * count << std::endl;
+    outFile << key.getName() << "   " << count << "   " << std::setprecision(2)
+            << std::fixed << key.getPrice() << "   " << key.getPrice() * count
+            << std::endl;
   }
 
   outFile << "===========================" << std::endl;
-  outFile << std::setprecision(5) << "Subtotal  : " << m_subTotal << std::endl;
+  outFile << "Subtotal  : " << m_subTotal << std::endl;
   outFile << "Total     : " << m_Total << std::endl;
 
   outFile.close();
