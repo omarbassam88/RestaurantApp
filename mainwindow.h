@@ -41,6 +41,8 @@ private slots:
 
   void on_CancelButton_clicked();
 
+  void on_PrintReceiptButton_clicked();
+
   private:
   Ui::MainWindow *ui;
   QTimer *timer_1s;

@@ -158,6 +158,11 @@ void MainWindow::ShowReceiptItems(Receipt *receipt) {
       newItem->setText(1, QString::number(value));
       ui->tableReceiptItemsList->addTopLevelItem(newItem);
     }
+
+    ui->SubTotalLabelValue->setText(QString::number(
+        m_selectedTable->getCurrentReceipt()->getSubTotal(), 'f', 2));
+    ui->TotalLabelValue->setText(QString::number(
+        m_selectedTable->getCurrentReceipt()->getTotal(), 'f', 2));
   }
 }
 
@@ -235,4 +240,14 @@ void MainWindow::on_AddSelectedItemButton_clicked() {
 
 void MainWindow::on_CancelButton_clicked() {
   ui->stackedWidget->setCurrentIndex(2);
+}
+
+void MainWindow::on_PrintReceiptButton_clicked() {
+  if (!m_selectedTable->getCurrentReceipt()) {
+    qDebug("No Receipt assigned for selected Table");
+  } else {
+    m_selectedTable->getCurrentReceipt()->print();
+    m_selectedTable->setCurrentReceipt(nullptr);
+    ui->stackedWidget->setCurrentIndex(1);
+  }
 }

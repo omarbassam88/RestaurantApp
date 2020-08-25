@@ -9,10 +9,10 @@ class Item {
 public:
   Item(std::string name, ItemCategory category, float price);
 
-  int getID() { return m_ID; }
+  int getID() const { return m_ID; }
   std::string getName() const { return m_name; }
-  float getPrice() { return m_price; }
-  ItemCategory getCategory() { return m_category; }
+  float getPrice() const { return m_price; }
+  ItemCategory getCategory() const { return m_category; }
 
   // Override Operator < to be able to find in std::map
   friend bool operator<(const Item &lhs, const Item &rhs) {
