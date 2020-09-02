@@ -9,24 +9,6 @@
 
 #include "./ui_mainwindow.h"
 
-void MainWindow::clearModel() {
-  m_model->clear();
-  m_model->setHorizontalHeaderItem(0, new QStandardItem("items"));
-  m_model->setHorizontalHeaderItem(1, new QStandardItem("count"));
-  ui->tableReceiptItemsList->verticalHeader()->hide();
-  ui->tableReceiptItemsList->setColumnWidth(0, 400);
-  ui->tableReceiptItemsList->setColumnWidth(1, 50);
-  ui->tableReceiptItemsList->setSortingEnabled(false);
-  ui->tableReceiptItemsList->horizontalHeader()->setStretchLastSection(true);
-  ui->tableReceiptItemsList->setSelectionBehavior(
-      QAbstractItemView::SelectRows);
-  ui->tableReceiptItemsList->setSelectionMode(
-      QAbstractItemView::SingleSelection);
-  SpinBoxDelegate *spinBox = new SpinBoxDelegate(this);
-  ui->tableReceiptItemsList->setItemDelegateForColumn(1, spinBox);
-  connect(spinBox, SIGNAL(valueEmitted(int)), this, SLOT(UpdateReceipt(int)));
-}
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
@@ -160,6 +142,24 @@ void MainWindow::go_to_PreviousPage() {
   ui->stackedWidget->setCurrentIndex(current_page - 1);
 }
 
+void MainWindow::clearModel() {
+  m_model->clear();
+  m_model->setHorizontalHeaderItem(0, new QStandardItem("items"));
+  m_model->setHorizontalHeaderItem(1, new QStandardItem("count"));
+  ui->tableReceiptItemsList->verticalHeader()->hide();
+  ui->tableReceiptItemsList->setColumnWidth(0, 400);
+  ui->tableReceiptItemsList->setColumnWidth(1, 50);
+  ui->tableReceiptItemsList->setSortingEnabled(false);
+  ui->tableReceiptItemsList->horizontalHeader()->setStretchLastSection(true);
+  ui->tableReceiptItemsList->setSelectionBehavior(
+      QAbstractItemView::SelectRows);
+  ui->tableReceiptItemsList->setSelectionMode(
+      QAbstractItemView::SingleSelection);
+  SpinBoxDelegate *spinBox = new SpinBoxDelegate(this);
+  ui->tableReceiptItemsList->setItemDelegateForColumn(1, spinBox);
+  connect(spinBox, SIGNAL(valueEmitted(int)), this, SLOT(UpdateReceipt(int)));
+}
+
 void MainWindow::ShowReceiptItems(Receipt *receipt) {
   // TODO
   // Clear Items List from Previous Receipt
@@ -226,8 +226,8 @@ void MainWindow::on_RemoveItemButton_clicked() {
   } else {
 
     qDebug() << selected_item->selectedRows(0).value(0).data().toString();
-    std::string itemName =
-        qUtf8Printable(selected_item->selectedRows(0).value(0).data().toString());
+    std::string itemName = qUtf8Printable(
+        selected_item->selectedRows(0).value(0).data().toString());
 
     for (auto &[key, value] :
          m_selectedTable->getCurrentReceipt()->getItemsList()) {
