@@ -14,14 +14,26 @@ Receipt::Receipt(Table &table) {
 }
 
 void Receipt::addItem(const Item &item, int count) {
-  if (m_itemsList.count(item) > 0) // Check if Item exists
+
+  if (m_itemsList.count(item)) // Check if Item exists
   {
-    qDebug("Item Already Exists");
-    m_itemsList[item] += count;
-  } else {
+      qDebug("Item Already Exists");
+      m_itemsList[item] += count;
+    }
+  else {
     m_itemsList.insert(std::make_pair(item, 1));
     qDebug("Item Doesn't Exist Will be Added");
     qDebug("Total Number of Items: %d", m_itemsList.size());
+  }
+
+  calculate();
+}
+
+void Receipt::updateItem(std::string itemName, int count) {
+  for (auto &[key, value] : m_itemsList) {
+    if (key.getName() == itemName) {
+      value = count;
+    }
   }
 
   calculate();

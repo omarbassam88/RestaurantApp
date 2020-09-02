@@ -1,11 +1,31 @@
 #include "mainwindow.h"
 
+#include "delegate.h"
 #include <QDebug>
+#include <QStandardItemModel>
 #include <QString>
 #include <QTime>
 #include <QTimer>
 
 #include "./ui_mainwindow.h"
+
+void MainWindow::clearModel() {
+  m_model->clear();
+  m_model->setHorizontalHeaderItem(0, new QStandardItem("items"));
+  m_model->setHorizontalHeaderItem(1, new QStandardItem("count"));
+  ui->tableReceiptItemsList->verticalHeader()->hide();
+  ui->tableReceiptItemsList->setColumnWidth(0, 400);
+  ui->tableReceiptItemsList->setColumnWidth(1, 50);
+  ui->tableReceiptItemsList->setSortingEnabled(false);
+  ui->tableReceiptItemsList->horizontalHeader()->setStretchLastSection(true);
+  ui->tableReceiptItemsList->setSelectionBehavior(
+      QAbstractItemView::SelectRows);
+  ui->tableReceiptItemsList->setSelectionMode(
+      QAbstractItemView::SingleSelection);
+  SpinBoxDelegate *spinBox = new SpinBoxDelegate(this);
+  ui->tableReceiptItemsList->setItemDelegateForColumn(1, spinBox);
+  connect(spinBox, SIGNAL(valueEmitted(int)), this, SLOT(UpdateReceipt(int)));
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -15,14 +35,11 @@ MainWindow::MainWindow(QWidget *parent)
   connect(timer_1s, SIGNAL(timeout()), this, SLOT(UpdateTime()));
   timer_1s->start(1000);
 
-  // Set Receipt Items List View
-  ui->tableReceiptItemsList->headerItem()->setText(0, "Item");
-  ui->tableReceiptItemsList->headerItem()->setText(1, "Count");
-  ui->tableReceiptItemsList->setColumnWidth(0, 800);
-  ui->tableReceiptItemsList->setColumnWidth(1, 50);
-  ui->tableReceiptItemsList->header()->setSectionResizeMode(
-      0, QHeaderView::Stretch);
-  ui->tableReceiptItemsList->setSortingEnabled(false);
+  // Set Receipt Items Table View
+  // ----------------------------
+  m_model = new QStandardItemModel(this);
+  ui->tableReceiptItemsList->setModel(m_model);
+  clearModel();
 
   // Add Button for Each Category
   for (std::string categoryName : Item::getCategoryNames()) {
@@ -103,7 +120,7 @@ void MainWindow::TablePage() {
 
   // check if Table already has a Receipt
   if (m_selectedTable->getCurrentReceipt() == NULL) {
-    ui->tableReceiptItemsList->clear();
+    clearModel();
   } else {
     receipt = m_selectedTable->getCurrentReceipt();
     qDebug("Receipt %d already Exists", receipt->getID());
@@ -144,25 +161,27 @@ void MainWindow::go_to_PreviousPage() {
 }
 
 void MainWindow::ShowReceiptItems(Receipt *receipt) {
+  // TODO
   // Clear Items List from Previous Receipt
-  ui->tableReceiptItemsList->clear();
-
-  // Add current Receipt Items to the ListView
+  clearModel();
+  // Add current Receipt Items to the TableView
   if (!receipt) {
     qDebug("Table no. %d has no Receipt", m_selectedTable->getID());
+    clearModel();
   } else {
     for (auto &[key, value] : receipt->getItemsList()) {
 
-      QTreeWidgetItem *newItem = new QTreeWidgetItem(ui->tableReceiptItemsList);
-      newItem->setText(0, QString::fromStdString(key.getName()));
-      newItem->setText(1, QString::number(value));
-      ui->tableReceiptItemsList->addTopLevelItem(newItem);
+      QStandardItem *nameItem =
+          new QStandardItem(QString::fromStdString(key.getName()));
+
+      QStandardItem *countItem = new QStandardItem();
+      countItem->setData(value, Qt::EditRole);
+
+      m_model->appendRow({nameItem, countItem});
     }
 
-    ui->SubTotalLabelValue->setText(QString::number(
-        m_selectedTable->getCurrentReceipt()->getSubTotal(), 'f', 2));
-    ui->TotalLabelValue->setText(QString::number(
-        m_selectedTable->getCurrentReceipt()->getTotal(), 'f', 2));
+    // Update Total and SubTotal
+    UpdateReceiptTotal();
   }
 }
 
@@ -199,15 +218,20 @@ void MainWindow::on_BackButton_3_clicked() { go_to_PreviousPage(); }
 void MainWindow::on_AddItemButton_clicked() { CategoriesPage(); }
 
 void MainWindow::on_RemoveItemButton_clicked() {
-  if (ui->tableReceiptItemsList->selectedItems().empty()) {
+  QItemSelectionModel *selected_item =
+      ui->tableReceiptItemsList->selectionModel();
+
+  if (!selected_item) {
     qDebug("No Item is selected");
   } else {
-    QString selected_item =
-        ui->tableReceiptItemsList->selectedItems().first()->text(0);
+
+    qDebug() << selected_item->selectedRows(0).value(0).data().toString();
+    std::string itemName =
+        qUtf8Printable(selected_item->selectedRows(0).value(0).data().toString());
 
     for (auto &[key, value] :
          m_selectedTable->getCurrentReceipt()->getItemsList()) {
-      if (key.getName() == selected_item.toStdString()) {
+      if (key.getName() == itemName) {
         m_selectedTable->getCurrentReceipt()->removeItem(key);
       }
     }
@@ -250,4 +274,25 @@ void MainWindow::on_PrintReceiptButton_clicked() {
     m_selectedTable->setCurrentReceipt(nullptr);
     ui->stackedWidget->setCurrentIndex(1);
   }
+}
+
+void MainWindow::UpdateReceipt(int num) {
+  qDebug("Receipt is Updating..");
+  qDebug("%d", num);
+
+  QItemSelectionModel *select = ui->tableReceiptItemsList->selectionModel();
+  qDebug() << select->selectedRows(0).value(0).data().toString();
+  std::string itemName =
+      qUtf8Printable(select->selectedRows(0).value(0).data().toString());
+  m_selectedTable->getCurrentReceipt()->updateItem(itemName, num);
+
+  // Update Calculated Total and Subtotal
+  UpdateReceiptTotal();
+}
+
+void MainWindow::UpdateReceiptTotal() {
+  ui->SubTotalLabelValue->setText(QString::number(
+      m_selectedTable->getCurrentReceipt()->getSubTotal(), 'f', 2));
+  ui->TotalLabelValue->setText(QString::number(
+      m_selectedTable->getCurrentReceipt()->getTotal(), 'f', 2));
 }

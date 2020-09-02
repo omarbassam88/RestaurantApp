@@ -2,6 +2,7 @@
 #define ITEM_H
 #include <QtDebug>
 #include <string>
+#include <functional>
 
 enum ItemCategory { Food, Beverages, Other };
 
@@ -18,6 +19,9 @@ public:
   friend bool operator<(const Item &lhs, const Item &rhs) {
     return lhs.getName() < rhs.getName();
   }
+
+  bool operator==(const Item &rhs) const { return (m_name == rhs.getName()); }
+
   static std::vector<std::string> getCategoryNames() {
     return {"Food", "Beverages", "Other"};
   }
@@ -29,4 +33,9 @@ private:
   ItemCategory m_category;
 };
 
+template <> struct std::hash<Item> {
+  size_t operator()(const Item &k) const {
+    return (std::hash<std::string>()(k.getName()));
+  }
+};
 #endif // ITEM_H

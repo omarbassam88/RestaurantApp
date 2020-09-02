@@ -26,6 +26,8 @@ add_executable(Restaurant_App
     item.h
     receipt.cpp
     receipt.h
+    delegate.cpp 
+    delegate.h
 )
 
 

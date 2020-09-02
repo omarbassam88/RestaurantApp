@@ -3,6 +3,7 @@
 
 #include "table.h"
 #include <QMainWindow>
+#include <QStandardItemModel>
 #include <vector>
 
 QT_BEGIN_NAMESPACE
@@ -20,12 +21,17 @@ public:
 
   void go_to_PreviousPage();
 
+  void clearModel();
+
+  void UpdateReceiptTotal();
+
 private slots:
   void on_CreateTables_Button_clicked();
   void UpdateTime();
   void TablePage();
   void CategoriesPage();
   void CategoryItemsPage();
+  void UpdateReceipt(int num);
 
   void on_BackButton_clicked();
 
@@ -43,12 +49,14 @@ private slots:
 
   void on_PrintReceiptButton_clicked();
 
-  private:
+private:
   Ui::MainWindow *ui;
   QTimer *timer_1s;
   int m_max_column_count = 4;
   std::vector<Table *> m_tablesList;
   std::vector<Item *> m_itemsInventory;
+
+  QStandardItemModel *m_model;
 
   Table *m_selectedTable;
 
