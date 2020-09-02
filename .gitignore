@@ -71,6 +71,6 @@ Thumbs.db
 *.dll
 *.exe
 
-/build/*
-/.vscode/*
+/build/
+/.vscode/
 CMakeLists.txt.user
