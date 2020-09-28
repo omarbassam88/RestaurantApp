@@ -19,6 +19,7 @@ public:
   void print();
 
   int getID() { return m_ID; }
+  Table *getTable() { return m_table; }
   std::unordered_map<Item, int> getItemsList() { return m_itemsList; }
   float getSubTotal() { return m_subTotal; }
   float getTotal() { return m_Total; }

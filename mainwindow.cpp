@@ -31,6 +31,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(button, SIGNAL(clicked()), this, SLOT(CategoryItemsPage()));
   }
 
+  // Setup Database
+
+  Database::create();
+
+  m_db = Database::getInstance();
+
+// TODO Set up last receipt Id from Database
+  Receipt::lastReceiptID=300;
+
   // Create Inventory
   /* ========================================================== */
   // Add Dummy Beverage to the Inventory
@@ -201,11 +210,22 @@ void MainWindow::ShowCategoryItems(ItemCategory category) {
   }
 
   // Update UI
-  ui->CateryItemsList->clear();
+  // Clear the Buttons list from previous categories
+  QLayoutItem *child;
+  while ((child = ui->CategoryItemsButtons->takeAt(0)) != nullptr) {
+
+    delete child->widget(); // delete the widget
+    delete child;           // delete the layout item
+  }
+  // Add list of items for selected Category
   for (Item *&itm : categoryItems) {
-    QTreeWidgetItem *newItem = new QTreeWidgetItem(ui->CateryItemsList);
-    newItem->setText(0, QString::fromStdString(itm->getName()));
-    ui->CateryItemsList->addTopLevelItem(newItem);
+    QPushButton *item_button =
+        new QPushButton(QString::fromStdString(itm->getName()));
+    item_button->setText(QString::fromStdString(itm->getName()));
+    ui->CategoryItemsButtons->addWidget(item_button);
+    // setup the button call Back function
+    connect(item_button, SIGNAL(clicked(bool)), this,
+            SLOT(on_AddSelectedItemButton_clicked()));
   }
 }
 
@@ -242,24 +262,22 @@ void MainWindow::on_RemoveItemButton_clicked() {
 }
 
 void MainWindow::on_AddSelectedItemButton_clicked() {
-  if (ui->CateryItemsList->selectedItems().empty()) {
-    qDebug("No Item is selected");
-  } else {
-    QString selected_item =
-        ui->CateryItemsList->selectedItems().first()->text(0);
 
-    qDebug("%s Item is Selected", qUtf8Printable(selected_item));
+  QPushButton *buttonSender = qobject_cast<QPushButton *>(sender());
 
-    for (Item *&itm : m_itemsInventory) {
-      if (itm->getName() == selected_item.toStdString()) {
-        m_selectedTable->addItem(*itm);
-      }
+  QString selected_item = buttonSender->text();
+
+  qDebug("%s Item is Selected", qUtf8Printable(selected_item));
+
+  for (Item *&itm : m_itemsInventory) {
+    if (itm->getName() == selected_item.toStdString()) {
+      m_selectedTable->addItem(*itm);
     }
-
-    // Update UI
-    ShowReceiptItems(m_selectedTable->getCurrentReceipt());
-    ui->stackedWidget->setCurrentIndex(2);
   }
+
+  // Update UI
+  ShowReceiptItems(m_selectedTable->getCurrentReceipt());
+  ui->stackedWidget->setCurrentIndex(2);
 }
 
 void MainWindow::on_CancelButton_clicked() {
@@ -271,6 +289,8 @@ void MainWindow::on_PrintReceiptButton_clicked() {
     qDebug("No Receipt assigned for selected Table");
   } else {
     m_selectedTable->getCurrentReceipt()->print();
+    // Write the receipt to Database
+    m_db->addReceipt(m_selectedTable->getCurrentReceipt());
     m_selectedTable->setCurrentReceipt(nullptr);
     ui->stackedWidget->setCurrentIndex(1);
   }

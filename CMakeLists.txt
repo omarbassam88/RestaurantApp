@@ -28,7 +28,9 @@ add_executable(Restaurant_App
     receipt.h
     delegate.cpp 
     delegate.h
+    database.cpp
+    database.h
 )
 
 
-target_link_libraries(Restaurant_App PRIVATE Qt5::Widgets)
+target_link_libraries(Restaurant_App PRIVATE Qt5::Widgets sqlite3)

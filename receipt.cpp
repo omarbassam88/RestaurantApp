@@ -17,10 +17,9 @@ void Receipt::addItem(const Item &item, int count) {
 
   if (m_itemsList.count(item)) // Check if Item exists
   {
-      qDebug("Item Already Exists");
-      m_itemsList[item] += count;
-    }
-  else {
+    qDebug("Item Already Exists");
+    m_itemsList[item] += count;
+  } else {
     m_itemsList.insert(std::make_pair(item, 1));
     qDebug("Item Doesn't Exist Will be Added");
     qDebug("Total Number of Items: %d", m_itemsList.size());
@@ -68,12 +67,14 @@ void Receipt::print() {
 
   std::ofstream outFile;
 
-  outFile.open("TestPrintReceipt.txt");
+  std::string filename="Receipt_"+ std::to_string(m_ID) + ".txt";
+
+  outFile.open(filename);
 
   std::setprecision(1);
-  std::fixed;
 
   outFile << "Receipt No. : " << m_ID << std::endl;
+  outFile << "Table No. : " << m_table->getID() << std::endl;
 
   outFile << "===========================" << std::endl;
 

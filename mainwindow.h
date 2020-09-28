@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "table.h"
+#include "database.h"
 #include <QMainWindow>
 #include <QStandardItemModel>
 #include <vector>
@@ -59,6 +60,8 @@ private:
   QStandardItemModel *m_model;
 
   Table *m_selectedTable;
+
+  Database* m_db;
 
   void CreateTables(uint16_t Number);
   void ShowReceiptItems(Receipt *receipt);
