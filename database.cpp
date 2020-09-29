@@ -5,6 +5,7 @@
 #include <sqlite3.h>
 
 Database *Database::s_instance = nullptr;
+int Database::m_lastReceiptId = 0;
 
 Database::Database() {}
 
@@ -68,4 +69,46 @@ bool Database::addReceipt(Receipt *receipt) {
   // Close the database before exit
   sqlite3_close(DB);
   return true;
+}
+
+int Database::getLastReceiptId() {
+  sqlite3 *DB;
+  int exit = 0;
+  char *messaggeError;
+  exit = sqlite3_open("restaurant.db", &DB);
+  if (exit) {
+    std::cerr << "Failed to open File" << std::endl;
+  } else {
+    std::cout << "Opened Database Successfully" << std::endl;
+  }
+
+  std::string select_sql =
+      "SELECT * FROM Receipts WHERE   ID = (SELECT MAX(ID)  FROM Receipts);";
+
+  exit = sqlite3_exec(DB, select_sql.c_str(), callback, 0, &messaggeError);
+
+  std::cout << messaggeError << std::endl;
+
+  return m_lastReceiptId;
+}
+
+int Database::callback(void *NotUsed, int argc, char **argv, char **azColName) {
+
+  // int argc: holds the number of results
+  // (array) azColName: holds each column returned
+  // (array) argv: holds each value
+
+  for (int i = 0; i < argc; i++) {
+
+    // Show column name, value, and newline
+    std::cout << azColName[i] << " : " << argv[i] << " " << std::endl;
+  }
+
+  m_lastReceiptId = atoi(argv[0]);
+
+  // Insert a newline
+  std::cout << m_lastReceiptId << std::endl;
+
+  // Return successful
+  return 0;
 }

@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
   m_db = Database::getInstance();
 
 // TODO Set up last receipt Id from Database
-  Receipt::lastReceiptID=300;
+  Receipt::lastReceiptID= m_db->getLastReceiptId();
 
   // Create Inventory
   /* ========================================================== */
