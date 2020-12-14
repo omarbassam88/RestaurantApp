@@ -37,8 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
 
   m_db = Database::getInstance();
 
-// TODO Set up last receipt Id from Database
-  Receipt::lastReceiptID= m_db->getLastReceiptId();
+  // TODO Set up last receipt Id from Database
+  Receipt::lastReceiptID = m_db->getLastReceiptId();
 
   // Create Inventory
   /* ========================================================== */
@@ -292,6 +292,7 @@ void MainWindow::on_PrintReceiptButton_clicked() {
     // Write the receipt to Database
     m_db->addReceipt(m_selectedTable->getCurrentReceipt());
     m_selectedTable->setCurrentReceipt(nullptr);
+    UpdateReceiptTotal();
     ui->stackedWidget->setCurrentIndex(1);
   }
 }
@@ -311,8 +312,14 @@ void MainWindow::UpdateReceipt(int num) {
 }
 
 void MainWindow::UpdateReceiptTotal() {
-  ui->SubTotalLabelValue->setText(QString::number(
-      m_selectedTable->getCurrentReceipt()->getSubTotal(), 'f', 2));
-  ui->TotalLabelValue->setText(QString::number(
-      m_selectedTable->getCurrentReceipt()->getTotal(), 'f', 2));
+  if (m_selectedTable->getCurrentReceipt()) {
+
+    ui->SubTotalLabelValue->setText(QString::number(
+        m_selectedTable->getCurrentReceipt()->getSubTotal(), 'f', 2));
+    ui->TotalLabelValue->setText(QString::number(
+        m_selectedTable->getCurrentReceipt()->getTotal(), 'f', 2));
+  } else {
+    ui->SubTotalLabelValue->setText("");
+    ui->TotalLabelValue->setText("");
+  }
 }
